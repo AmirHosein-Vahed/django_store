@@ -5,10 +5,22 @@ class Promotion(models.Model):
     description = models.CharField(max_length=255)
     discount = models.FloatField()
 
+    def __str__(self):
+        return self.description + str(discount)
+
+    class Meta:
+        ordering = ['description']
+
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
+
+    def __str__(self):
+        return self.title
+    
+    class Meta:
+        ordering = ['title']
 
 
 class Product(models.Model):
@@ -20,6 +32,13 @@ class Product(models.Model):
     last_update  = models.DateField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion) # , related_name='products') instead of product_set 
+
+    def __str__(self):
+        return self.title +" - $"+ str(self.unit_price)
+    
+    class Meta:
+        ordering = ['unit_price']
+
 
 
 class Customer(models.Model): 
@@ -39,6 +58,12 @@ class Customer(models.Model):
     birth_date = models.DateField(null=True)
     membership = models.CharField(max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
 
+    def __str__(self):
+        return self.first_name +" "+ self.last_name
+    
+    class Meta:
+        ordering = ['first_name', 'last_name']
+
 
 class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
@@ -54,12 +79,24 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
+    def __str__(self):
+        return self.customer.last_name +" - "+ self.payment_status
+
+    class Meta:
+        ordering = ['payment_status', 'customer']
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.DecimalField(max_digits=6, decimal_places=2) # 9999.99
+
+    def __str__(self):
+        return self.order.customer.last_name +" "+ self.product.title
+
+    class Meta:
+        ordering = ['quantity']
 
 
 class Address(models.Model):
@@ -68,9 +105,18 @@ class Address(models.Model):
     # customer = models.OneToOneField(Customer, on_delete=models.CASCADE, primary_key=True) # cascade, set_null, set_default, protect
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.customer.last_name+" "+ self.city
+
+    class Meta:
+        ordering = ['city']
+
 
 class Cart(models.Model):
     created_at = models.DateField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
 
 
 class CartItem(models.Model):
@@ -78,3 +124,8 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
 
+    def __str__(self):
+        return self.product.title+" "+ self.quantity
+
+    class Meta:
+        ordering = ['quantity']
