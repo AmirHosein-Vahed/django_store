@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from store.models import Product
 
-# Create your views here.
 def say_hello(request):
-    return render(request, "hello.html")
-    # return HttpResponse("hello world")
+    # queryset = TaggedItem.objects.get_tags_for(Product, 1)
+     
+
+    return render(request, "hello.html", {"name": "Mosh", "Products": list(products)})

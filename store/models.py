@@ -13,15 +13,16 @@ class Collection(models.Model):
 
 class Product(models.Model):
     title = models.CharField(max_length=255)
+    slug = models.SlugField()
     description = models.TextField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=6, decimal_places=2)
     inventory = models.IntegerField()
     last_update  = models.DateField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion) # , related_name='products') instead of product_set 
 
 
-class Customer(models.Model):
+class Customer(models.Model): 
     MEMBERSHIP_BRONZE = 'B'
     MEMBESHIP_SILVER = 'S'
     MEMBERSHIP_GOLD = 'G'
@@ -31,7 +32,7 @@ class Customer(models.Model):
         (MEMBESHIP_SILVER, 'Silver'),
         (MEMBERSHIP_GOLD, 'Gold')
     ]
-    first_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255) 
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=255)
